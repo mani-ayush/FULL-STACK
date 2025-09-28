@@ -1,0 +1,57 @@
+
+const express = require('express');
+const app = express();
+
+// Middleware to parse JSON body
+app.use(express.json());
+
+// In-memory array to store cards
+let cards = [];
+let nextId = 1; // For auto-incrementing card IDs
+
+// --- Routes ---
+
+// GET all cards
+app.get('/cards', (req, res) => {
+  res.json(cards);
+});
+
+// GET a specific card by ID
+app.get('/cards/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const card = cards.find(c => c.id === id);
+  if (!card) {
+    return res.status(404).json({ message: 'Card not found' });
+  }
+  res.json(card);
+});
+
+// POST a new card
+app.post('/cards', (req, res) => {
+  const { suit, value } = req.body;
+  if (!suit || !value) {
+    return res.status(400).json({ message: 'Suit and value are required' });
+  }
+
+  const card = { id: nextId++, suit, value };
+  cards.push(card);
+  res.status(201).json({ message: `Card added successfully`, card });
+});
+
+// DELETE a card by ID
+app.delete('/cards/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const index = cards.findIndex(c => c.id === id);
+  if (index === -1) {
+    return res.status(404).json({ message: 'Card not found' });
+  }
+
+  const removedCard = cards.splice(index, 1)[0];
+  res.json({ message: `Card removed successfully`, card: removedCard });
+});
+
+// Start the server
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});
