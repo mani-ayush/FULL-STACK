@@ -1,0 +1,87 @@
+import readline from "readline";
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+
+const employees = [
+  { name: 'Alice', id: 'E101' },
+  { name: 'Bob', id: 'E102' },
+  { name: 'Charlie', id: 'E103' }
+];
+
+function showMenu() {
+  console.log('\n===== Employee Management System =====');
+  console.log('1. Add Employee');
+  console.log('2. List All Employees');
+  console.log('3. Remove Employee by ID');
+  console.log('4. Exit');
+  console.log('====================================');
+
+  rl.question('Enter your choice: ', (choice) => {
+    switch (choice.trim()) {
+      case '1':
+        addEmployee();
+        break;
+      case '2':
+        listEmployees();
+        break;
+      case '3':
+        removeEmployee();
+        break;
+      case '4':
+        exitApp();
+        break;
+      default:
+        console.log('❌ Invalid choice. Please enter a number between 1 and 4.');
+        showMenu();
+        break;
+    }
+  });
+}
+
+function addEmployee() {
+  rl.question('Enter new employee name: ', (name) => {
+    rl.question('Enter new employee ID: ', (id) => {
+      employees.push({ name: name.trim(), id: id.trim() });
+      console.log(`✅ Employee '${name}' (ID: ${id}) added successfully.`);
+      showMenu();
+    });
+  });
+}
+
+function listEmployees() {
+  if (employees.length === 0) {
+    console.log('\nNo employees found in the system.');
+  } else {
+    console.log('\n--- Employee List ---');
+    employees.forEach((employee, index) => {
+      console.log(`${index + 1}. Name: ${employee.name}, ID: ${employee.id}`);
+    });
+    console.log('---------------------');
+  }
+  showMenu();
+}
+
+function removeEmployee() {
+  rl.question('Enter the ID of the employee to remove: ', (id) => {
+    const employeeIdToRemove = id.trim();
+    const index = employees.findIndex(emp => emp.id === employeeIdToRemove);
+
+    if (index !== -1) {
+      const removedEmployee = employees.splice(index, 1)[0];
+      console.log(`🗑️ Employee '${removedEmployee.name}' (ID: ${removedEmployee.id}) was removed.`);
+    } else {
+      console.log(`❌ Employee with ID '${employeeIdToRemove}' not found.`);
+    }
+    showMenu();
+  });
+}
+
+function exitApp() {
+  console.log('\nExiting application. Goodbye! 👋');
+  rl.close();
+}
+
+showMenu();
